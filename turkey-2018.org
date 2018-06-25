@@ -1,0 +1,53 @@
+* Turkey 2018 elections
+
+data from [[https://gist.github.com/oztalha/0bdaa68e53466f64055ad276f11e868e][presidential]] and [[https://gist.github.com/oztalha/63f2de239bac84f4f81e86442d1a0749][parliament]] ([[https://twitter.com/tozCSS/status/1011004328549597186][Oz Talha]]).  [[https://www.yenisafak.com/secim-cumhurbaskanligi-2018][YeniŞafak]] (and,
+YeniŞafak's [[results page]], which includes data also on past elections).
+unfortunately, all this is by ilce.  well, e.g., [[https://www.yenisafak.com/secim-2018/yalova-ili-secim-sonuclari][Yalova ili results]]
+have quantities.
+
+to look at what beautify finds:
+#+BEGIN_SRC python
+import codecs
+fi = codecs.open("test", "w", "utf-8")
+print >>fi, soup.prettify()
+fi.close()
+#+END_SRC
+
+#+BEGIN_SRC python
+  import requests
+  import pandas as pd
+  from bs4 import BeautifulSoup
+  from unidecode import unidecode
+
+  city_meta = 'https://raw.githubusercontent.com/oztalha/2015-11-01-Elections-Turkey/master/data/city_meta.csv'
+  cities = pd.read_csv(city_meta,usecols=['il']).il #Cities w/ Turkish characters
+
+  results = {}
+  for c in cities:
+      print(c)
+      url = 'https://www.yenisafak.com/secim-cumhurbaskanligi-2018/'+unidecode(c).lower()+'-ili-secim-sonuclari'
+      resource = requests.get(url)
+      soup = BeautifulSoup(resource.content.decode('utf-8','ignore'), "html5lib")
+      # kill all script, style, sub, sup and b elements
+      for script in soup(["script", "style", "sup", "sub", "b"]):
+          script.extract()    # rip it out
+      # now, find voting percentages, number of ballot boxes
+      attendance = soup.find_all(class_='attendance')
+      if len(attendance) != 1:
+          raise AssertionError
+      attendance = attendance[0]
+      names = attendance.find_all(class_='name')
+      data = attendance.find_all(class_='data')
+      if len(names) != len(data):
+          raise AssertionError
+      # now, 
+      towns = soup.find(class_='table-scroll').find_all(class_='table-data')[1].find_all('span')
+      results[c] = {}
+      for t in range(0,len(towns),8):
+          results[c][towns[t].text] = [float(i.text.strip().replace(',','.')) for i in towns[t+1:t+8]]
+
+  cb = pd.DataFrame({(city,town):result for city,towns in results.items() for town,result in towns.items()},
+                                     index=('opened','RTE','MI','MA','SD','TK','DP')).T
+  cb.index.names = ('city','town')
+  cb.to_csv('cb-ilce-sonuclari.csv')
+#+END_SRC
