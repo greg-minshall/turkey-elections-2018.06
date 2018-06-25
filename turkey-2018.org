@@ -6,12 +6,24 @@ unfortunately, all this is by ilce.  well, e.g., [[https://www.yenisafak.com/sec
 have quantities.
 
 to look at what beautify finds:
-#+BEGIN_SRC python
-import codecs
-fi = codecs.open("test", "w", "utf-8")
-print >>fi, soup.prettify()
-fi.close()
+#+BEGIN_SRC python :var city="yalova" :var fname="test"
+  import codecs
+  import requests
+  import pandas as pd
+  from bs4 import BeautifulSoup
+  from unidecode import unidecode
+
+  print(city)
+  url = 'https://www.yenisafak.com/secim-2018/'+unidecode(city).lower()+'-ili-secim-sonuclari'
+  resource = requests.get(url)
+  soup = BeautifulSoup(resource.content.decode('utf-8','ignore'), "html5lib")
+  fi = codecs.open(fname, "w", "utf-8")
+  print >>fi, soup.prettify()
+  fi.close()
 #+END_SRC
+
+#+RESULTS:
+: None
 
 #+BEGIN_SRC python
   import requests
@@ -25,7 +37,7 @@ fi.close()
   results = {}
   for c in cities:
       print(c)
-      url = 'https://www.yenisafak.com/secim-cumhurbaskanligi-2018/'+unidecode(c).lower()+'-ili-secim-sonuclari'
+      url = 'https://www.yenisafak.com/secim-2018/'+unidecode(c).lower()+'-ili-secim-sonuclari'
       resource = requests.get(url)
       soup = BeautifulSoup(resource.content.decode('utf-8','ignore'), "html5lib")
       # kill all script, style, sub, sup and b elements
@@ -40,7 +52,7 @@ fi.close()
       data = attendance.find_all(class_='data')
       if len(names) != len(data):
           raise AssertionError
-      # now, 
+      # now, where are the votes?
       towns = soup.find(class_='table-scroll').find_all(class_='table-data')[1].find_all('span')
       results[c] = {}
       for t in range(0,len(towns),8):
