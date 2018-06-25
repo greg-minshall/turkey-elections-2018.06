@@ -55,7 +55,7 @@ to look at what beautify finds:
       attnames = [i.text for i in names]
       attdata = [i.text for i in data]
       # now, where are the votes?
-      names = [i for j in soup.find_all(class_='partyBars-table') find_all(class_="partyBars-column names")
+      names = [k.text for i in soup.select('.card .partyBars-table') for j in i.select('.names') for k in j.select('.bars-text')]
       mps = soup.find_all(class_="partyBars-column mps")
       votes = soup.find_all(class_="bars-votes")
       pnames = [i.text for j in names for i in j.find_all(class_="bars-text")]
