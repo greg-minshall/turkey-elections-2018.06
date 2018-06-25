@@ -55,17 +55,16 @@ to look at what beautify finds:
       attnames = [i.text for i in names]
       attdata = [i.text for i in data]
       # now, where are the votes?
-      names = soup.find_all(class_="partyBars-column names")
+      names = [i for j in soup.find_all(class_='partyBars-table') find_all(class_="partyBars-column names")
       mps = soup.find_all(class_="partyBars-column mps")
       votes = soup.find_all(class_="bars-votes")
-      if len(names) != len(mps) or len(names) != len(votes):
-          raise AssertionError
       pnames = [i.text for j in names for i in j.find_all(class_="bars-text")]
       pmps = [i.text for j in mps for i in j.find_all(class_="bars-text")]
       pvotes = [int(i.text.split(" ")[1].replace('.','')) for i in votes]
+      if len(pnames) != len(pmps) or len(pnames) != len(pvotes):
+          raise AssertionError
+      results[c] = [i for i in attdata, (pnames[i], pmps[i], pvotes[i]) for i in range(len(pnames))]
 
-      towns = soup.find(class_='table-scroll').find_all(class_='table-data')[1].find_all('span')
-      results[c] = {}
       for t in range(0,len(towns),8):
           results[c][towns[t].text] = [float(i.text.strip().replace(',','.')) for i in towns[t+1:t+8]]
 
