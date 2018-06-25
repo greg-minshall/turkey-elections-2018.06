@@ -25,7 +25,8 @@ to look at what beautify finds:
 #+RESULTS:
 : None
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python :var fname="test" :session ss
+  import codecs
   import requests
   import pandas as pd
   from bs4 import BeautifulSoup
@@ -35,7 +36,10 @@ to look at what beautify finds:
   cities = pd.read_csv(city_meta,usecols=['il']).il #Cities w/ Turkish characters
 
   results = {}
-  for c in cities:
+  attnames = []
+  pnames = []
+  #  for c in cities:
+  for c in ['Yalova', 'Izmir']:
       print(c)
       url = 'https://www.yenisafak.com/secim-2018/'+unidecode(c).lower()+'-ili-secim-sonuclari'
       resource = requests.get(url)
@@ -46,40 +50,48 @@ to look at what beautify finds:
       # now, find voting percentages, number of ballot boxes
       attendance = soup.find_all(class_='attendance')
       if len(attendance) != 1:
-          raise AssertionError
+          print "len(attendance) = %d too big (> 1)" % (len(attendance))
+          # raise AssertionError   # XXX
       attendance = attendance[0]
       names = attendance.find_all(class_='name')
       data = attendance.find_all(class_='data')
       if len(names) != len(data):
+          print "len(names) = %d != len(data) = %d" % (len(names, len(data)))
           raise AssertionError
-      attnames = [i.text for i in names]
-      attdata = [i.text for i in data]
+      if attnames == []:
+          attnames = [i.text for i in names]
+          attdata = [i.text for i in data]
+      elif attnames != names:
+          raise AssertionError    # make sure in *same* order each time
       # now, where are the votes?
-      names = [k.text
-               for i in soup.select('.card .partyBars-table')
-               for j in i.select('.names')
-               for k in j.select('.bars-text')]
-      mps = [k.text
-             for i in soup.select('.card .partyBars-table')
-             for j in i.select('.mps')
-             for k in j.select('.bars-text')]
-      votes = [int(l.text.split(" ")[1].replace('.',''))
-               for i in soup.select('.card .partyBars-table')
-               for j in i.select('.bars')
-               for k in j.select('.ratio-front')
-               for l in k.select('.bars-votes')]
-      pnames = [i.text for j in names for i in j.find_all(class_="bars-text")]
-      pmps = [i.text for j in mps for i in j.find_all(class_="bars-text")]
-      pvotes = [int(i.text.split(" ")[1].replace('.','')) for i in votes]
-      if len(pnames) != len(pmps) or len(pnames) != len(pvotes):
-          raise AssertionError
-      results[c] = [i for i in attdata, (pnames[i], pmps[i], pvotes[i]) for i in range(len(pnames))]
+      where = soup.select('.card > .compare > table:nth-of-type(1)')
+      names = [j.text for i in where for j in i.select('.names .bars-text')]
+      pmps = [int(j.text) for i in where for j in i.select('.mps .bars-text')]
+      pvotes = [int(j.text.split(" ")[1].replace('.','')) for i in where for j in i.select('.ratio-back .bars-votes')]
+      if len(names) != len(pmps) or len(names) != len(pvotes):
+          raise AssertionError    # if we have different length of parties, MPs, votes
+      if pnames == []:
+          pnames = names          # remember party names
+      elif pnames != names:
+          raise AssertionError    # make sure party names always in same order
+      results[c] = attdata + pvotes + pmps
 
-      for t in range(0,len(towns),8):
-          results[c][towns[t].text] = [float(i.text.strip().replace(',','.')) for i in towns[t+1:t+8]]
-
-  cb = pd.DataFrame({(city,town):result for city,towns in results.items() for town,result in towns.items()},
-                                     index=('opened','RTE','MI','MA','SD','TK','DP')).T
-  cb.index.names = ('city','town')
-  cb.to_csv('cb-ilce-sonuclari.csv')
+  genel = pd.DataFrame({(city):result for city,result in results.items()}, index=attnames+map(lambda x: x + " MPs", pnames) + pnames).T
+  genel.index.names = ['city']
+  genel.to_csv(fname, encoding="utf-8")
 #+END_SRC
+
+#+RESULTS:
+#+begin_example
+<script>
+$(".result-switch-buttons a").click(function() {
+var elem = $(this).data("type");
+$(".result-content-container").removeClass("party-charts").removeClass("alliance-charts");
+$(".election-switch-buttons").removeClass("active");
+$(".result-content-container").addClass(elem);
+$(this).addClass("active");
+history.pushState('', $(this).data("title"), $(this).attr("href"));
+return false;
+});
+</script>
+#+end_example
