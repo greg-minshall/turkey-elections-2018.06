@@ -82,3 +82,36 @@ to look at what beautify finds:
 #+END_SRC
 
 #+RESULTS:
+
+#+BEGIN_SRC R :session rs :var ifile="test"
+  options(digits=4)
+  x <- read.csv(ifile)
+  parties <- colnames(x)[-(1:5)]
+  parties <- parties[1:(length(parties)/2)]
+  mps <- colnames(x)[-(1:5)]
+  mps <- mps[-(1:length(parties))]
+  res <- data.frame()
+  total.votes <- sum(x[,parties])
+  total.mps <- sum(x[,mps])
+  res <- data.frame()
+  for (party in parties) {
+      votes <- sum(x[,party])
+      mps <- sum(x[,paste(party, "MPs", sep=".")])
+      df <- data.frame(party=party, votes=votes, pctvotes=votes/total.votes,
+                       mps=mps, pctmps=mps/total.mps)
+      res <- rbind(res, df)
+  }
+  res
+#+END_SRC
+
+#+RESULTS:
+| AK.Parti  | 23029074 |     0.45942923148743 | 327 |              0.545 |
+| CHP       | 12377764 |    0.246935964600781 | 158 |  0.263333333333333 |
+| HDP       |  6383514 |    0.127350883982971 |  62 |  0.103333333333333 |
+| İYİ.Parti |  4619952 |   0.0921678829495625 |  35 | 0.0583333333333333 |
+| MHP       |  2750810 |   0.0548785645600833 |  18 |               0.03 |
+| SP        |   668209 |   0.0133307464878086 |   0 |                  0 |
+| HÜDA.PAR  |   180347 |  0.00359791642560458 |   0 |                  0 |
+| VP        |    96462 |  0.00192441357076452 |   0 |                  0 |
+| Bağımsız  |    19268 | 0.000384395934995032 |   0 |                  0 |
+| Diğer     |        0 |                    0 |   0 |                  0 |
