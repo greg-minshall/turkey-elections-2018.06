@@ -83,7 +83,7 @@ to look at what beautify finds:
 
 #+RESULTS:
 
-#+BEGIN_SRC R :session rs :var ifile="test" :results output table 
+#+BEGIN_SRC R :session rs :var ifile="test" :results table :colnames yes :rownames yes
   x <- read.csv(ifile)
   parties <- colnames(x)[-(1:5)]
   parties <- parties[1:(length(parties)/2)]
@@ -101,20 +101,19 @@ to look at what beautify finds:
       rownames(df) <- party
       res <- rbind(res, df)
   }
-  print(res, digits=4)
+  res
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-             votes  pctvotes mps  pctmps
-AK.Parti  23029074 0.4594292 327 0.54500
-CHP       12377764 0.2469360 158 0.26333
-HDP        6383514 0.1273509  62 0.10333
-İYİ.Parti  4619952 0.0921679  35 0.05833
-MHP        2750810 0.0548786  18 0.03000
-SP          668209 0.0133307   0 0.00000
-HÜDA.PAR    180347 0.0035979   0 0.00000
-VP           96462 0.0019244   0 0.00000
-Bağımsız     19268 0.0003844   0 0.00000
-Diğer            0 0.0000000   0 0.00000
-#+end_example
+|           |    votes |             pctvotes | mps |             pctmps |
+|-----------+----------+----------------------+-----+--------------------|
+| AK.Parti  | 23029074 |     0.45942923148743 | 327 |              0.545 |
+| CHP       | 12377764 |    0.246935964600781 | 158 |  0.263333333333333 |
+| HDP       |  6383514 |    0.127350883982971 |  62 |  0.103333333333333 |
+| İYİ.Parti |  4619952 |   0.0921678829495625 |  35 | 0.0583333333333333 |
+| MHP       |  2750810 |   0.0548785645600833 |  18 |               0.03 |
+| SP        |   668209 |   0.0133307464878086 |   0 |                  0 |
+| HÜDA.PAR  |   180347 |  0.00359791642560458 |   0 |                  0 |
+| VP        |    96462 |  0.00192441357076452 |   0 |                  0 |
+| Bağımsız  |    19268 | 0.000384395934995032 |   0 |                  0 |
+| Diğer     |        0 |                    0 |   0 |                  0 |
