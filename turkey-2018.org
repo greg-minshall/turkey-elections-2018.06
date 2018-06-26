@@ -46,34 +46,34 @@ to look at what beautify finds:
       soup = BeautifulSoup(resource.content.decode('utf-8','ignore'), "html5lib")
       # kill all script, style, sub, sup and b elements
       for script in soup(["script", "style", "sup", "sub", "b"]):
-          script.extract()    # rip it out
+          null = script.extract()    # rip it out
       # now, find voting percentages, number of ballot boxes
       attendance = soup.find_all(class_='attendance')
       if len(attendance) != 1:
           print "len(attendance) = %d too big (> 1)" % (len(attendance))
           # raise AssertionError   # XXX
       attendance = attendance[0]
-      names = attendance.find_all(class_='name')
-      data = attendance.find_all(class_='data')
+      names = [i.text for i in attendance.find_all(class_='name')]
+      data = [i.text for i in attendance.find_all(class_='data')]
       if len(names) != len(data):
           print "len(names) = %d != len(data) = %d" % (len(names, len(data)))
           raise AssertionError
-      if attnames == []:
-          attnames = [i.text for i in names]
-          attdata = [i.text for i in data]
-      elif attnames != names:
+      if attnames != [] and attnames != names:
+          print "attnames (= [%s]) != names (= [%s])" % (attnames, names)
           raise AssertionError    # make sure in *same* order each time
+      attnames = names
+      attdata = data
       # now, where are the votes?
       where = soup.select('.card > .compare > table:nth-of-type(1)')
       names = [j.text for i in where for j in i.select('.names .bars-text')]
       pmps = [int(j.text) for i in where for j in i.select('.mps .bars-text')]
       pvotes = [int(j.text.split(" ")[1].replace('.','')) for i in where for j in i.select('.ratio-back .bars-votes')]
       if len(names) != len(pmps) or len(names) != len(pvotes):
+          print "len(names) (= %d) != len(pmps) (= %d) or len(pvotes) (= %d)" % (len(names), len(pmps), len(pvotes))
           raise AssertionError    # if we have different length of parties, MPs, votes
       if pnames == []:
           pnames = names          # remember party names
-      elif pnames != names:
-          raise AssertionError    # make sure party names always in same order
+      pdb.set_trace()
       results[c] = attdata + pvotes + pmps
 
   genel = pd.DataFrame({(city):result for city,result in results.items()}, index=attnames+map(lambda x: x + " MPs", pnames) + pnames).T
