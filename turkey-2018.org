@@ -54,7 +54,7 @@ to look at what beautify finds:
           # raise AssertionError   # XXX
       attendance = attendance[0]
       names = [i.text for i in attendance.find_all(class_='name')]
-      data = [i.text for i in attendance.find_all(class_='data')]
+      data = [i.text.replace('.','') for i in attendance.find_all(class_='data')]
       if len(names) != len(data):
           print "len(names) = %d != len(data) = %d" % (len(names, len(data)))
           raise AssertionError
