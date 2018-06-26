@@ -26,7 +26,7 @@ to look at what beautify finds:
 : None
 
 #+name: secim-2018-genel-scraper
-#+BEGIN_SRC python :var fname="test" :session ss
+#+BEGIN_SRC python :session ss :results none :var fname="genel-secim-2018-sonuclari.csv"
   import codecs
   import requests
   import pandas as pd
@@ -77,11 +77,9 @@ to look at what beautify finds:
       results[c] = attdata + pvotes + pmps
 
   genel = pd.DataFrame({(city):result for city,result in results.items()}, index=attnames + pnames + map(lambda x: x + " MPs", pnames)).T
-  genel.index.names = ['city']
   genel.to_csv(fname, encoding="utf-8")
 #+END_SRC
 
-#+RESULTS:
 
 #+BEGIN_SRC R :session rs :var ifile="test" :results table :colnames yes :rownames yes
   x <- read.csv(ifile)
