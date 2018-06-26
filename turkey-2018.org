@@ -6,7 +6,7 @@ unfortunately, all this is by ilce.  well, e.g., [[https://www.yenisafak.com/sec
 have quantities.
 
 to look at what beautify finds:
-#+BEGIN_SRC python :var city="yalova" :var fname="test"
+#+BEGIN_SRC python :var city="adana" :var fname="test"
   import codecs
   import requests
   import pandas as pd
@@ -25,6 +25,7 @@ to look at what beautify finds:
 #+RESULTS:
 : None
 
+#+name: secim-2018-genel-scraper
 #+BEGIN_SRC python :var fname="test" :session ss
   import codecs
   import requests
@@ -33,13 +34,12 @@ to look at what beautify finds:
   from unidecode import unidecode
 
   city_meta = 'https://raw.githubusercontent.com/oztalha/2015-11-01-Elections-Turkey/master/data/city_meta.csv'
-  cities = pd.read_csv(city_meta,usecols=['il']).il #Cities w/ Turkish characters
+  cities = pd.read_csv(city_meta,usecols=['il'], encoding='utf-8').il #Cities w/ Turkish characters
 
   results = {}
   attnames = []
   pnames = []
-  #  for c in cities:
-  for c in ['Yalova', 'Izmir']:
+  for c in cities:
       print(c)
       url = 'https://www.yenisafak.com/secim-2018/'+unidecode(c).lower()+'-ili-secim-sonuclari'
       resource = requests.get(url)
@@ -64,7 +64,8 @@ to look at what beautify finds:
       attnames = names
       attdata = data
       # now, where are the votes?
-      where = soup.select('.card > .compare > table:nth-of-type(1)')
+      # (XXX need to do i.select to get *each* of the cards?)
+      where = [j for i in soup.select('.card') for j in i.select('table:nth-of-type(1)')]
       names = [j.text for i in where for j in i.select('.names .bars-text')]
       pmps = [int(j.text) for i in where for j in i.select('.mps .bars-text')]
       pvotes = [int(j.text.split(" ")[1].replace('.','')) for i in where for j in i.select('.ratio-back .bars-votes')]
@@ -73,25 +74,11 @@ to look at what beautify finds:
           raise AssertionError    # if we have different length of parties, MPs, votes
       if pnames == []:
           pnames = names          # remember party names
-      pdb.set_trace()
       results[c] = attdata + pvotes + pmps
 
-  genel = pd.DataFrame({(city):result for city,result in results.items()}, index=attnames+map(lambda x: x + " MPs", pnames) + pnames).T
+  genel = pd.DataFrame({(city):result for city,result in results.items()}, index=attnames + pnames + map(lambda x: x + " MPs", pnames)).T
   genel.index.names = ['city']
   genel.to_csv(fname, encoding="utf-8")
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-<script>
-$(".result-switch-buttons a").click(function() {
-var elem = $(this).data("type");
-$(".result-content-container").removeClass("party-charts").removeClass("alliance-charts");
-$(".election-switch-buttons").removeClass("active");
-$(".result-content-container").addClass(elem);
-$(this).addClass("active");
-history.pushState('', $(this).data("title"), $(this).attr("href"));
-return false;
-});
-</script>
-#+end_example
