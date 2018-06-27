@@ -38,7 +38,7 @@ to look at what beautify finds:
 
   results = {}
   attnames = []
-  pnames = []
+  pnames = {}
   for c in cities:
       print(c)
       url = 'https://www.yenisafak.com/secim-2018/'+unidecode(c).lower()+'-ili-secim-sonuclari'
@@ -72,8 +72,7 @@ to look at what beautify finds:
       if len(names) != len(pmps) or len(names) != len(pvotes):
           print "len(names) (= %d) != len(pmps) (= %d) or len(pvotes) (= %d)" % (len(names), len(pmps), len(pvotes))
           raise AssertionError    # if we have different length of parties, MPs, votes
-      if pnames == []:
-          pnames = names          # remember party names
+      pnames += names          # remember party names
       results[c] = attdata + pvotes + pmps
 
   genel = pd.DataFrame({(city):result for city,result in results.items()}, index=attnames + pnames + map(lambda x: x + " MPs", pnames)).T
@@ -81,7 +80,7 @@ to look at what beautify finds:
 #+END_SRC
 
 
-#+BEGIN_SRC R :session rs :var ifile="test" :results table :colnames yes :rownames yes
+#+BEGIN_SRC R :session rs :var ifile="genel-secim-2018-sonuclari.csv" :results table :colnames yes :rownames yes
   x <- read.csv(ifile)
   parties <- colnames(x)[-(1:5)]
   parties <- parties[1:(length(parties)/2)]
@@ -105,13 +104,13 @@ to look at what beautify finds:
 #+RESULTS:
 |           |    votes |             pctvotes | mps |             pctmps |
 |-----------+----------+----------------------+-----+--------------------|
-| AK.Parti  | 23029074 |     0.45942923148743 | 327 |              0.545 |
-| CHP       | 12377764 |    0.246935964600781 | 158 |  0.263333333333333 |
-| HDP       |  6383514 |    0.127350883982971 |  62 |  0.103333333333333 |
-| İYİ.Parti |  4619952 |   0.0921678829495625 |  35 | 0.0583333333333333 |
-| MHP       |  2750810 |   0.0548785645600833 |  18 |               0.03 |
-| SP        |   668209 |   0.0133307464878086 |   0 |                  0 |
-| HÜDA.PAR  |   180347 |  0.00359791642560458 |   0 |                  0 |
-| VP        |    96462 |  0.00192441357076452 |   0 |                  0 |
-| Bağımsız  |    19268 | 0.000384395934995032 |   0 |                  0 |
+| AK.Parti  | 23031755 |     0.45943671446273 | 327 |              0.545 |
+| CHP       | 12380379 |    0.246963405592122 | 158 |  0.263333333333333 |
+| HDP       |  6384105 |    0.127349923007825 |  62 |  0.103333333333333 |
+| İYİ.Parti |  4620599 |   0.0921715615423043 |  35 | 0.0583333333333333 |
+| MHP       |  2751103 |   0.0548789149358596 |  18 |               0.03 |
+| SP        |   667624 |   0.0133177422674245 |   0 |                  0 |
+| HÜDA.PAR  |   179729 |  0.00358522836204501 |   0 |                  0 |
+| VP        |    95855 |  0.00191211248403888 |   0 |                  0 |
+| Bağımsız  |    19270 | 0.000384397345651549 |   0 |                  0 |
 | Diğer     |        0 |                    0 |   0 |                  0 |
