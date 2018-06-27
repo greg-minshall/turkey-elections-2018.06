@@ -1,5 +1,8 @@
 * Turkey's 2018 general election
 
+there is more data from the [[https://gist.github.com/oztalha/0bdaa68e53466f64055ad276f11e868e][presidential]] and [[https://gist.github.com/oztalha/63f2de239bac84f4f81e86442d1a0749][parliamentary]] elections, from
+[[https://twitter.com/tozCSS/status/1011004328549597186][Oz Talha]].
+
 #+BEGIN_SRC R :session rs :var ifile="genel-secim-2018-sonuclari.csv" :results table :colnames yes :rownames yes :exports results
   x <- read.csv(ifile)
   parties <- colnames(x)[-(1:5)]
@@ -18,20 +21,23 @@
       rownames(df) <- party
       res <- rbind(res, df)
   }
+  res <- res[order(rownames(res)),]
+  res[,"pctvotes"] <- as.integer(res[,"pctvotes"]*10000)/100
+  res[,"pctmps"] <- as.integer(res[,"pctmps"]*10000)/100
   res
 #+END_SRC
 
 #+RESULTS:
-|           |    votes |             pctvotes | mps |             pctmps |
-|-----------+----------+----------------------+-----+--------------------|
-| CHP       | 11348878 |     0.22638705652949 | 146 |  0.243333333333333 |
-| HDP       |  5865977 |    0.117014322182306 |  67 |  0.111666666666667 |
-| Diğer     |        4 | 7.97918724756719e-08 |   0 |                  0 |
-| Bağımsız  |    75633 |  0.00150872467273812 |   0 |                  0 |
-| SP        |   673731 |   0.0134395645087267 |   0 |                  0 |
-| AK.Parti  | 21335581 |    0.425601489586592 | 295 |  0.491666666666667 |
-| İYİ.Parti |  4990710 |   0.0995545239707651 |  43 | 0.0716666666666667 |
-| HÜDA.PAR  |   157612 |   0.0031440391511589 |   0 |                  0 |
-| VP        |   117779 |  0.00234945173707804 |   0 |                  0 |
-| MHP       |  5564514 |    0.111000747869273 |  49 | 0.0816666666666667 |
+|           |    votes | pctvotes | mps | pctmps |
+|-----------+----------+----------+-----+--------|
+| AK.Parti  | 21335581 |    42.56 | 295 |  49.16 |
+| Bağımsız  |    75633 |     0.15 |   0 |      0 |
+| CHP       | 11348878 |    22.63 | 146 |  24.33 |
+| Diğer     |        4 |        0 |   0 |      0 |
+| HDP       |  5865977 |     11.7 |  67 |  11.16 |
+| HÜDA.PAR  |   157612 |     0.31 |   0 |      0 |
+| İYİ.Parti |  4990710 |     9.95 |  43 |   7.16 |
+| MHP       |  5564514 |     11.1 |  49 |   8.16 |
+| SP        |   673731 |     1.34 |   0 |      0 |
+| VP        |   117779 |     0.23 |   0 |      0 |
 
