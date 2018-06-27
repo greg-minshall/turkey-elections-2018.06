@@ -38,8 +38,8 @@ to look at what beautify finds:
 
   results = {}
   attnames = []
-  pnames = {}
-  for c in cities:
+  pnames = set()
+  for c in ['yalova','izmir']: # cities:
       print(c)
       url = 'https://www.yenisafak.com/secim-2018/'+unidecode(c).lower()+'-ili-secim-sonuclari'
       resource = requests.get(url)
@@ -72,10 +72,18 @@ to look at what beautify finds:
       if len(names) != len(pmps) or len(names) != len(pvotes):
           print "len(names) (= %d) != len(pmps) (= %d) or len(pvotes) (= %d)" % (len(names), len(pmps), len(pvotes))
           raise AssertionError    # if we have different length of parties, MPs, votes
-      pnames += names          # remember party names
-      results[c] = attdata + pvotes + pmps
+      pmps = dict([(names[i], pmps[i]) for i in range(len(names))])
+      pvotes = dict([(names[i], pvotes[i]) for i in range(len(names))])
+      pnames |= set(names)          # remember party names
+      results[c] = [attdata, pvotes, pmps]
 
-  genel = pd.DataFrame({(city):result for city,result in results.items()}, index=attnames + pnames + map(lambda x: x + " MPs", pnames)).T
+  print "done processing"
+  pnames = list(pnames)           # freeze order
+  genel = pd.DataFrame({(city):[result[1][0] +
+                                [result[1][1].get(a,0) for a in pnames] +
+                                [result[1][2].get(a,0) for a in pnames]
+                        for result in results.items()][0]},
+                       index=attnames + pnames + map(lambda x: x + " MPs", pnames)).T
   genel.to_csv(fname, encoding="utf-8")
 #+END_SRC
 
