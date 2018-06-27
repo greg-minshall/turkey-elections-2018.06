@@ -1,7 +1,7 @@
 * Turkey's 2018 general election
 
 there is more data from the [[https://gist.github.com/oztalha/0bdaa68e53466f64055ad276f11e868e][presidential]] and [[https://gist.github.com/oztalha/63f2de239bac84f4f81e86442d1a0749][parliamentary]] elections, from
-[[https://twitter.com/tozCSS/status/1011004328549597186][Oz Talha]].
+[[https://twitter.com/tozCSS/status/1011004328549597186][Oz Talha]].  like Talha's, this presents data from [[https://www.yenisafak.com/secim-2018/secim-sonuclari][YeniŞafak.]]
 
 #+BEGIN_SRC R :session rs :var ifile="genel-secim-2018-sonuclari.csv" :results table :colnames yes :rownames yes :exports results
   x <- read.csv(ifile)

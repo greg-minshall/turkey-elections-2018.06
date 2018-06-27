@@ -1,7 +1,7 @@
 * Turkey 2018 elections
 
-data from [[https://gist.github.com/oztalha/0bdaa68e53466f64055ad276f11e868e][presidential]] and [[https://gist.github.com/oztalha/63f2de239bac84f4f81e86442d1a0749][parliament]] ([[https://twitter.com/tozCSS/status/1011004328549597186][Oz Talha]]).  [[https://www.yenisafak.com/secim-cumhurbaskanligi-2018][YeniŞafak]] (and,
-YeniŞafak's [[results page]], which includes data also on past elections).
+data from [[https://gist.github.com/oztalha/0bdaa68e53466f64055ad276f11e868e][presidential]] and [[https://gist.github.com/oztalha/63f2de239bac84f4f81e86442d1a0749][parliament]] ([[https://twitter.com/tozCSS/status/1011004328549597186][Oz Talha]]).  [[https://www.yenisafak.com/secim-2018][YeniŞafak]] (and,
+YeniŞafak's [[https://www.yenisafak.com/secim-2018/secim-sonuclari][results page]], which includes data also on past elections).
 unfortunately, all this is by ilce.  well, e.g., [[https://www.yenisafak.com/secim-2018/yalova-ili-secim-sonuclari][Yalova ili results]]
 have quantities.
 
