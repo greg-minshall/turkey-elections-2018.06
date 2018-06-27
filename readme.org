@@ -1,1 +1,37 @@
-this code is currently broken... (sigh!)
+* Turkey's 2018 general election
+
+#+BEGIN_SRC R :session rs :var ifile="genel-secim-2018-sonuclari.csv" :results table :colnames yes :rownames yes :exports results
+  x <- read.csv(ifile)
+  parties <- colnames(x)[-(1:5)]
+  parties <- parties[1:(length(parties)/2)]
+  mps <- colnames(x)[-(1:5)]
+  mps <- mps[-(1:length(parties))]
+  res <- data.frame()
+  total.votes <- sum(x[,parties])
+  total.mps <- sum(x[,mps])
+  res <- data.frame()
+  for (party in parties) {
+      votes <- sum(x[,party])
+      mps <- sum(x[,paste(party, "MPs", sep=".")])
+      df <- data.frame(votes=votes, pctvotes=votes/total.votes,
+                       mps=mps, pctmps=mps/total.mps)
+      rownames(df) <- party
+      res <- rbind(res, df)
+  }
+  res
+#+END_SRC
+
+#+RESULTS:
+|           |    votes |             pctvotes | mps |             pctmps |
+|-----------+----------+----------------------+-----+--------------------|
+| CHP       | 11348878 |     0.22638705652949 | 146 |  0.243333333333333 |
+| HDP       |  5865977 |    0.117014322182306 |  67 |  0.111666666666667 |
+| Diğer     |        4 | 7.97918724756719e-08 |   0 |                  0 |
+| Bağımsız  |    75633 |  0.00150872467273812 |   0 |                  0 |
+| SP        |   673731 |   0.0134395645087267 |   0 |                  0 |
+| AK.Parti  | 21335581 |    0.425601489586592 | 295 |  0.491666666666667 |
+| İYİ.Parti |  4990710 |   0.0995545239707651 |  43 | 0.0716666666666667 |
+| HÜDA.PAR  |   157612 |   0.0031440391511589 |   0 |                  0 |
+| VP        |   117779 |  0.00234945173707804 |   0 |                  0 |
+| MHP       |  5564514 |    0.111000747869273 |  49 | 0.0816666666666667 |
+
